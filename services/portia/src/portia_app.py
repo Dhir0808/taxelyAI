@@ -40,3 +40,40 @@ def api_portia_wait(clarification_id: str = Query(...)):
 @app.get("/api/sheets/list")
 def api_sheets_list():
     return list_user_sheets()
+
+# --- Normalization endpoints ---
+from .tools.normalize import normalize_kv
+
+class NormalizeReq(BaseModel):
+    kv: dict
+
+@app.post("/api/normalize")
+def api_normalize(req: NormalizeReq):
+    return normalize_kv(req.kv)
+
+@app.get("/api/schema/template")
+def api_schema_template():
+    csv_text = (
+        "key,value\n"
+        "companyName,ACME TECH LTD\n"
+        "companyNumber,01234567\n"
+        "accountingYear,2024\n"
+        "yearEnd,2024-12-31\n"
+        "revenueGBP,20000000\n"
+        "expensesGBP,14000000\n"
+        "rAndDSpendGBP,3000000\n"
+        "capexGBP,1000000\n"
+        "patentRevenueGBP,500000\n"
+        "applyCredits,true\n"
+    )
+    return {"templateCsv": csv_text}
+
+# --- Compute endpoint (normalized breakdown) ---
+from .tools.compute import compute_from_kv
+
+class ComputeReq(BaseModel):
+    kv: dict
+
+@app.post("/api/compute")
+def api_compute(req: ComputeReq):
+    return compute_from_kv(req.kv)
