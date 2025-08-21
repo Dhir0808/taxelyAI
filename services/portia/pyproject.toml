@@ -1,0 +1,27 @@
+[project]
+name = "taxely-portia"
+version = "0.1.0"
+description = "Taxely agent service using Portia SDK + FastAPI"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.111.0",
+  "uvicorn[standard]>=0.30.0",
+  "python-dotenv>=1.0.1",
+  "httpx>=0.27.0",
+  "pydantic>=2.7.0",
+  "orjson>=3.10.7",
+  "portia-sdk-python>=0.5.2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uvicorn]
+reload = true

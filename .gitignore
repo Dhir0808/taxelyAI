@@ -1,0 +1,54 @@
+# Node
+node_modules/
+.npm/
+.pnpm-store/
+.next/
+out/
+.next-cache/
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# VSCode/IDE
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.python-version
+.venv/
+venv/
+.envrc
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Coverage/test
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# OS
+Thumbs.db

@@ -1,0 +1,12 @@
+{
+  "company_name": "ACME TECH LTD",
+  "company_number": "01234567",
+  "registered_office_address": {
+    "address_line_1": "1 Demo Way",
+    "locality": "London",
+    "postal_code": "EC1A 1AA"
+  },
+  "sic_codes": ["62020"],
+  "jurisdiction": "england-wales",
+  "company_status": "active"
+}

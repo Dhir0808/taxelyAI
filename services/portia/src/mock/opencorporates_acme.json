@@ -1,0 +1,18 @@
+{
+  "api_version": "0.4",
+  "results": {
+    "companies": [
+      {
+        "company": {
+          "name": "ACME TECH LTD",
+          "company_number": "01234567",
+          "jurisdiction_code": "gb",
+          "incorporation_date": "2010-01-01",
+          "registered_address_in_full": "1 Demo Way, London EC1A 1AA",
+          "industry_codes": [{"industry_code":{"code":"62020","description":"Information technology consultancy activities"}}],
+          "current_status": "active"
+        }
+      }
+    ]
+  }
+}

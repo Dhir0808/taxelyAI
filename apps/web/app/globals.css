@@ -1,0 +1,141 @@
+* {
+  box-sizing: border-box;
+}
+:root {
+  /* Black + Orange theme */
+  --bg: #0a0a0a;
+  --panel: #111214;
+  --panel-2: #0d0e10;
+  --text: #f5f6f7;
+  --muted: #a9b1ba;
+  --border: #1e1f24;
+  --accent: #ff8a00; /* orange */
+  --accent-2: #ffb14d; /* light orange */
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+.container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1100px;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.9),
+    rgba(10, 10, 10, 0.6)
+  );
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+.nav a {
+  color: var(--text);
+  text-decoration: none;
+  margin-left: 16px;
+  opacity: 0.9;
+}
+.nav a:hover {
+  color: var(--accent);
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  align-items: center;
+  padding: 24px 0 8px;
+}
+.hero h1 {
+  font-size: 36px;
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+.hero p {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+.section {
+  margin-top: 18px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 16px;
+  /* subtle inner highlight */
+  box-shadow: inset 0 0 0 1px rgba(255, 138, 0, 0.02);
+}
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.grid {
+  display: grid;
+  gap: 12px;
+}
+input,
+button,
+textarea,
+select {
+  background: #121418;
+  color: var(--text);
+  border: 1px solid #232734;
+  border-radius: 10px;
+  padding: 10px;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15);
+}
+button {
+  background: linear-gradient(180deg, #ff9900, #ff7a00);
+  border-color: #ff8800;
+  color: #0a0a0a;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover {
+  background: linear-gradient(180deg, #ffa31a, #ff861a);
+  border-color: #ff9900;
+}
+.help {
+  font-size: 12px;
+  color: var(--muted);
+}
+.kv {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+}
+.kv div {
+  padding: 8px 0;
+  border-bottom: 1px dashed #273043;
+}
+ul.clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.site-footer {
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-2);
+}

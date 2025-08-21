@@ -1,0 +1,25 @@
+{
+  "corpTax": {
+    "smallProfitRate": 0.19,
+    "mainRate": 0.25,
+    "lowerLimitGBP": 50000,
+    "upperLimitGBP": 250000,
+    "marginalReliefNote": "Demo uses linear interpolation between 19% and 25% for profits £50k–£250k."
+  },
+  "credits": {
+    "RD_SME": {
+      "summary": "SME R&D relief: increased deduction for qualifying R&D expenditure. Demo applies effect via explanation, not precise HMRC formula."
+    },
+    "AIA": {
+      "summary": "Annual Investment Allowance: 100% first-year deduction on qualifying plant and machinery up to the threshold. Demo subtracts capex from profit."
+    },
+    "PATENT_BOX": {
+      "summary": "Patent Box: 10% effective rate on relevant IP profits. Demo applies 10% to declared patent profits slice."
+    }
+  },
+  "compliance": {
+    "CT600": "Corporation Tax return",
+    "RD_SCHEDULE": "R&D relief schedule / supporting computation",
+    "NOTES": "Hackathon demo. Not tax advice."
+  }
+}
