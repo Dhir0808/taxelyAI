@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { CompanyInput } from "../lib/schema";
+import { BACKEND } from "../lib/config";
 
 export default function InputForm({
   onRun,
@@ -62,18 +63,20 @@ export default function InputForm({
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        process.env.NEXT_PUBLIC_AGENT_URL ?? "http://localhost:8000/api/run",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
+      const url = `${BACKEND}/api/run`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `Request failed (${res.status})`);
+      }
       const data = await res.json();
       onRun(data);
     } catch (e: any) {
-      setError("Request failed. Please retry.");
+      setError(e?.message || String(e));
     } finally {
       setLoading(false);
     }

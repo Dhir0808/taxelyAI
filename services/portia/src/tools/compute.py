@@ -72,6 +72,17 @@ def compute_from_kv(kv: Dict[str, Any]) -> Dict[str, Any]:
         "notes": notes,
     }
 
+    # PDF-friendly fields
+    pdf = {
+        "company_name": ni.get("companyName") or "N/A",
+        "utr": "1234567890",
+        "period_start": f"{int(ni.get('accountingYear', 0))}-01-01" if ni.get("accountingYear") else "",
+        "period_end": f"{int(ni.get('accountingYear', 0))}-12-31" if ni.get("accountingYear") else "",
+        "taxable_profit": breakdown["profit_after_rd"],
+        "corporation_tax_rate": round(rate_normal * 100, 2),
+        "corporation_tax_due": total_tax,
+    }
+
     return {
         "input": ni or None,
         "issues": norm.get("issues", []),
@@ -80,5 +91,6 @@ def compute_from_kv(kv: Dict[str, Any]) -> Dict[str, Any]:
         "result": {
             "breakdown": breakdown,
             "assumptions": assumptions,
+            "pdf": pdf,
         },
     }

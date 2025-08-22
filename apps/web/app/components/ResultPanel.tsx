@@ -1,5 +1,6 @@
 "use client";
 import { fmtCurrency, fmtPercent } from "../lib/format";
+import { BACKEND } from "../lib/config";
 
 export default function ResultPanel({ data }: { data: any }) {
   if (!data) return null;
@@ -41,6 +42,54 @@ export default function ResultPanel({ data }: { data: any }) {
     a.download = "taxely_report.md";
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  async function postPdf(endpoint: string, payload: any, filename: string) {
+    const res = await fetch(`${BACKEND}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || `PDF request failed (${res.status})`);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const openCt600 = async () => {
+    const pdfData = {
+      company_name: data.input?.companyName || "N/A",
+      period_start: `${data.input?.accountingYear}-01-01`,
+      period_end: `${data.input?.accountingYear}-12-31`,
+      taxable_income: Number(
+        tb.profit_after_rd ??
+          tb.profit_after_capex ??
+          tb.profit_before_capex ??
+          0
+      ),
+      corporation_tax_rate: Math.round((tb.rate_normal ?? 0) * 100 * 100) / 100,
+      corp_tax_due: Number(tb.total_tax ?? 0),
+    };
+    await postPdf("/api/pdf/ct600", { pdfData }, "CT600.pdf");
+  };
+
+  const openRd = async () => {
+    const pdfData = {
+      company_name: data.input?.companyName || "N/A",
+      period_start: `${data.input?.accountingYear}-01-01`,
+      period_end: `${data.input?.accountingYear}-12-31`,
+      rd_expenditure: Number(data.input?.rAndDSpendGBP ?? 0),
+      rd_relief: Number(tb.rd_extra_deduction ?? 0),
+      rd_credit: 0,
+    };
+    await postPdf("/api/pdf/rd", { pdfData }, "CT600L_R&D.pdf");
   };
 
   return (
@@ -112,8 +161,10 @@ export default function ResultPanel({ data }: { data: any }) {
         </pre>
       </div>
 
-      <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
         <button onClick={dl}>Download Markdown</button>
+        <button onClick={openCt600}>Download CT600</button>
+        <button onClick={openRd}>Download R&D Schedule</button>
       </div>
     </div>
   );

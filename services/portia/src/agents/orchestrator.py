@@ -16,6 +16,8 @@ from ..tools.opencorporates import lookup_company
 from ..tools.tax_calculator import compute_corp_tax
 from ..tools.credit_finder import find_credits
 from ..tools.compliance import build_compliance
+from ..services.pdf_generator import generate_ct600_pdf, generate_rd_schedule_pdf
+from pathlib import Path
 
 class CompanyInput(BaseModel):
     companyName: Optional[str] = None
@@ -99,11 +101,11 @@ class ComplianceTool(Tool):
 def build_agent() -> Agent:
     tools = [OpenCorporatesTool(), TaxCalculatorTool(), CreditFinderTool(), ComplianceTool()]
     plan = Plan(steps=[
-        Step(id="calc-profit", tool=None),
+        Step(id="calc-profit", tool=None, input_schema={"fields":["revenueGBP","expensesGBP"]}),
         Step(id="opencorporates", tool="opencorporates_lookup"),
         Step(id="corp-tax", tool="tax_calculator"),
         Step(id="credits", tool="credit_finder"),
-        Step(id="hitl", tool=None),  # human-in-the-loop checkpoint
+        Step(id="hitl", tool=None),
         Step(id="compliance", tool="compliance_builder")
     ])
     return Agent(name="Taxely UK Copilot", plan=plan, tools=tools, human_in_the_loop=True)
@@ -122,7 +124,7 @@ def run_orchestration(payload: dict) -> dict:
     oc = agent.use("opencorporates_lookup", {"companyNumber": ci.companyNumber, "companyName": ci.companyName})
     trace.append({"step":"opencorporates", "ok": oc.get("ok"), "fallback": oc.get("fallback")})
 
-    # Step 3: corp tax
+    # Step 3: corp tax (offline)
     calc = agent.use("tax_calculator", {
         "profitGBP": profit_gbp,
         "patentRevenueGBP": ci.patentRevenueGBP,
@@ -145,6 +147,38 @@ def run_orchestration(payload: dict) -> dict:
     compliance = agent.use("compliance_builder", {"input": ci.model_dump(), "calc": calc, "credits": credits})
     trace.append({"step":"compliance", "items": len(compliance["checklist"])})
 
+    # Generate PDFs (HMRC-style fields)
+    outputs_dir = Path(__file__).resolve().parents[2].joinpath("outputs")
+    outputs_dir.mkdir(parents=True, exist_ok=True)
+
+    period_start = f"{ci.accountingYear}-01-01"
+    period_end = f"{ci.accountingYear}-12-31"
+
+    ct600_data = {
+        "company_name": ci.companyName or "N/A",
+        "utr": "1234567890",
+        "period_start": period_start,
+        "period_end": period_end,
+        "taxable_income": calc.get("profit_after_capex") or calc.get("profit_before_capex") or 0,
+        "corp_tax_due": calc.get("total_tax") or 0,
+    }
+    rd_data = {
+        "company_name": ci.companyName or "N/A",
+        "period_start": period_start,
+        "period_end": period_end,
+        "rd_expenditure": ci.rAndDSpendGBP or 0,
+        "rd_relief": 0,
+        "rd_credit": 0,
+    }
+
+    ct600_path = outputs_dir.joinpath("ct600.pdf")
+    rd_path = outputs_dir.joinpath("rd_schedule.pdf")
+    try:
+        generate_ct600_pdf(ct600_data, str(ct600_path))
+        generate_rd_schedule_pdf(rd_data, str(rd_path))
+    except Exception:
+        pass
+
     return {
         "plan": trace,
         "company": oc.get("data"),
@@ -152,6 +186,7 @@ def run_orchestration(payload: dict) -> dict:
         "result": {
             "taxBreakdown": calc,
             "credits": credits,
-            "compliance": compliance
+            "compliance": compliance,
+            "outputs": {"ct600": str(ct600_path), "rd_schedule": str(rd_path)}
         }
     }
